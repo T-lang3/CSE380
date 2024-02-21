@@ -73,6 +73,9 @@ export default class GradientCircleShaderType extends RectShaderType {
 		const u_Transform = gl.getUniformLocation(program, "u_Transform");
 		gl.uniformMatrix4fv(u_Transform, false, transformation.toArray());
 
+		//change color
+		const u_Color = gl.getUniformLocation(program, "u_Color");
+		gl.uniform4fv(u_Color, options.color.toWebGL());
 		// Draw the quad
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	}
@@ -86,7 +89,8 @@ export default class GradientCircleShaderType extends RectShaderType {
 		let options: Record<string, any> = {
 			position: gc.position,
 			size: gc.size,
-			rotation: gc.rotation
+			rotation: gc.rotation,
+			color: gc.color
 		}
 
 		return options;

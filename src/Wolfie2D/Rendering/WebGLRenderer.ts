@@ -175,7 +175,7 @@ export default class WebGLRenderer extends RenderingManager {
 		}
 
 		options.origin = this.origin.clone().mult(parallax);
-
+			
 		return options;
 	}
 

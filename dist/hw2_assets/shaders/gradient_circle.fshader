@@ -1,6 +1,7 @@
 precision mediump float;
 
 varying vec4 v_Position;
+uniform vec4 u_Color;
 
 // HOMEWORK 2 - TODO
 /*
@@ -22,6 +23,8 @@ void main(){
 		alpha = 4.0*dist_sq;
 	}
 
+	vec4 color = vec4(u_Color.r, u_Color.g, u_Color.b, alpha);
+
 	// Use the alpha value in our color
-	gl_FragColor = vec4(1.0, 0.0, 0.0, alpha);
+	gl_FragColor = color;
 }

@@ -55,9 +55,9 @@ export default class Homework1_Scene extends Scene {
 
 	// Timers
 	private asteroidTimer: number = 0;
-	private ASTEROID_MAX_TIME: number = 5;	// Spawn an asteroid every 10 seconds
+	private ASTEROID_MAX_TIME: number = 2;	// Spawn an asteroid every 10 seconds
 	private mineralTimer: number = 0;
-	private MINERAL_MAX_TIME: number = 5; // Spawn a mineral every 5 seconds
+	private MINERAL_MAX_TIME: number = 1; // Spawn a mineral every 5 seconds
 	private gameEndTimer: number = 0;
 	private GAME_END_MAX_TIME: number = 3;
 
@@ -65,6 +65,8 @@ export default class Homework1_Scene extends Scene {
 	private WORLD_PADDING: Vec2 = new Vec2(64, 64);
 	private ASTEROID_SPEED: number = 100;
 	private ASTEROID_SPEED_INC: number = 10;
+
+	private colors: Array<Color> = new Array(6);
 
 	// HOMEWORK 2 - TODO
 	/*
@@ -83,6 +85,7 @@ export default class Homework1_Scene extends Scene {
 		this.load.image("space", "hw2_assets/sprites/space.png");
 
 		/* ##### YOUR CODE GOES BELOW THIS LINE ##### */
+		this.load.spritesheet("fleet", "hw2_assets/spritesheets/space_ship/space_ship.json");
 	}
 
 	/*
@@ -268,6 +271,14 @@ export default class Homework1_Scene extends Scene {
 			let collider = new Circle(Vec2.ZERO, 50);
 			this.asteroids[i].setCollisionShape(collider);
 		}
+		
+		//Initialize 6 colors
+		this.colors[0] = Color.BLUE;
+		this.colors[1] = Color.RED;
+		this.colors[2] = Color.GREEN;
+		this.colors[3] = Color.ORANGE;
+		this.colors[4] = Color.YELLOW;
+		this.colors[5] = Color.WHITE;
 	}
 
 	// Spawns a new ship for your fleet
@@ -475,6 +486,19 @@ export default class Homework1_Scene extends Scene {
 				if(asteroid.visible && Homework1_Scene.checkAABBtoCircleCollision(<AABB>this.player.collisionShape, <Circle>asteroid.collisionShape)){
 					// Put your code here:
 
+					//Asteroid destroyed and score updated
+					asteroid.visible = false;
+					this.numAsteroidsDestroyed += 1;
+
+					//make i frame
+					this.playerinvincible = true;
+
+					//decrease shield and update UI
+					this.playerShield -= 1;
+					this.shieldsLabel.text = `Shield: ${this.playerShield}`;
+					
+					//fire player damage event
+					this.emitter.fireEvent(Homework2Event.PLAYER_DAMAGE, {shield: this.playerShield});
 				}
 			}
 		}
@@ -505,6 +529,8 @@ export default class Homework1_Scene extends Scene {
 		if(asteroid !== null){
 			// Bring this asteroid to life
 			asteroid.visible = true;
+			let a = RandUtils.randInt(0,6);
+			asteroid.color = this.colors[a];
 
 			// Extract the size of the viewport
 			let viewportSize = this.viewport.getHalfSize().scaled(2);
@@ -568,7 +594,25 @@ export default class Homework1_Scene extends Scene {
 	 * @param paddedViewportSize The size of the viewport with padding
 	 */
 	handleScreenWrap(node: GameNode, viewportCenter: Vec2, paddedViewportSize: Vec2): void {
-		// Your code goes here:
+		let hori = paddedViewportSize.x/2;//gets from center to horizontal edge
+		let vert = paddedViewportSize.y/2;//gets from center to vertital edge
+		let left = viewportCenter.x - hori;//left edge
+		let right = viewportCenter.x + hori;//right edge
+		let top = viewportCenter.y - vert;//top edge
+		let bot = viewportCenter.y + vert;//bottom edge
+		
+		if (node.position.x < left){
+			node.position.x = right;
+		}
+		else if (node.position.x > right){
+			node.position.x = left;
+		}
+		if (node.position.y > bot){
+			node.position.y = top;
+		}
+		else if (node.position.y < top){
+			node.position.y = bot;
+		}
 
 	}
 
@@ -598,8 +642,18 @@ export default class Homework1_Scene extends Scene {
 	 * @returns True if the two shapes overlap, false if they do not
 	 */
 	static checkAABBtoCircleCollision(aabb: AABB, circle: Circle): boolean {
-		// Your code goes here:
-		return false;
+		let upleft = aabb.topLeft;
+		let downright = aabb.bottomRight;
+		let center = circle.center;
+		let radius = circle.radius;
+		let closestX = Math.max(upleft.x, Math.min(center.x, downright.x));
+		let closestY = Math.max(upleft.y, Math.min(circle.y, downright.y));
+		
+		let distanceX = circle.x - closestX;
+		let distanceY = circle.y - closestY;
+		
+		let distance_squared = distanceX**2 + distanceY**2;
+		return distance_squared <= radius**2;
 	}
 
 }
