@@ -460,6 +460,7 @@ export default class Homework1_Scene extends Scene {
 					){
 						// Kill asteroid
 						asteroid.visible = false;
+						this.numAsteroidsDestroyed += 1;
 						this.numAsteroids -= 1;
 
 						// Update the gui
