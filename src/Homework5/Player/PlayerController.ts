@@ -113,7 +113,11 @@ export default class PlayerController extends StateMachineAI {
      */
     update(deltaT: number): void {
 		super.update(deltaT);
-
+        let pos = new Vec2(this.owner.position.x, this.owner.position.y+this.owner.collisionShape.halfSize.y*2);
+        if (this.owner.onGround && this.tilemap.getTileAtWorldPosition(pos) == 8){//if on ground, and ground is switch
+            this.tilemap.setTileAtRowCol(this.tilemap.getColRowAt(pos), 9);//change index 8 to 9 to make on
+            this.emitter.fireEvent(HW5_Events.PLAYER_HIT_SWITCH, null);
+        }
 		if(this.currentState instanceof Jump){
 			Debug.log("playerstate", "Player State: Jump");
 		} else if (this.currentState instanceof Walk){

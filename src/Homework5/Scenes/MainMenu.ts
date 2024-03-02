@@ -13,7 +13,7 @@ export default class MainMenu extends Scene {
 
     loadScene(): void {
         // Load the menu song
-        this.load.audio("menu", "hw5_assets/music/menu.mp3");
+        this.load.audio("menu", "hw5_assets/music/level.mp3");
     }
 
     startScene(): void {
@@ -56,8 +56,8 @@ export default class MainMenu extends Scene {
                     collisions:
                     [
                         [0, 1, 1],
-                        [1, 0, 0],
-                        [1, 0, 0]
+                        [1, 0, 1],//player collides with balloon
+                        [1, 1, 0]//ballon collides with player
                     ]
                 }
             }

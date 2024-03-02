@@ -3,6 +3,7 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Debug from "../../Wolfie2D/Debug/Debug";
 import { GameEventType } from "../../Wolfie2D/Events/GameEventType";
 import Input from "../../Wolfie2D/Input/Input";
+import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 import { TweenableProperties } from "../../Wolfie2D/Nodes/GameNode";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Point from "../../Wolfie2D/Nodes/Graphics/Point";
@@ -107,7 +108,7 @@ export default class GameLevel extends Scene {
         // Handle events and update the UI if needed
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
-            
+            console.log(event.data);
             switch(event.type){
                 case HW5_Events.PLAYER_HIT_SWITCH:
                     {
@@ -122,7 +123,8 @@ export default class GameLevel extends Scene {
                     {
                         let node = this.sceneGraph.getNode(event.data.get("node"));
                         let other = this.sceneGraph.getNode(event.data.get("other"));
-
+                        console.log(node);
+                        console.log(other);
                         if(node === this.player){
                             // Node is player, other is balloon
                             this.handlePlayerBalloonCollision(<AnimatedSprite>node, <AnimatedSprite>other);
@@ -140,7 +142,7 @@ export default class GameLevel extends Scene {
                         this.balloonsPopped++;
                         this.balloonLabel.text = "Balloons Left: " + (this.totalBalloons - this.balloonsPopped);
                         let node = this.sceneGraph.getNode(event.data.get("owner"));
-                        
+                        console.log(node);
                         // Set mass based on color
                         let particleMass = 0;
                         if ((<BalloonController>node._ai).color == HW5_Color.RED) {
@@ -386,6 +388,7 @@ export default class GameLevel extends Scene {
         balloon.addPhysics();
         balloon.addAI(BalloonController, aiOptions);
         balloon.setGroup("balloon");
+        balloon.setTrigger("player", HW5_Events.PLAYER_HIT_BALLOON, null)
 
     }
 
@@ -416,6 +419,13 @@ export default class GameLevel extends Scene {
      * 
      */
     protected handlePlayerBalloonCollision(player: AnimatedSprite, balloon: AnimatedSprite) {
+        if (!balloon){
+            return;
+        }
+        if ((<PlayerController>player._ai).suitColor != (<BalloonController>balloon._ai).color) {
+            this.incPlayerLife(-1);
+        }
+        this.emitter.fireEvent(HW5_Events.BALLOON_POPPED, {owner: balloon.id});
     }
 
     /**
