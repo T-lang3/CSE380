@@ -155,6 +155,7 @@ export default class GameLevel extends Scene {
                             particleMass = 3;
                         }
                         this.system.startSystem(2000, particleMass, node.position.clone());
+                        this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "balloon_pop", loop: false, holdReference: false});
                         node.destroy();
                     }
                     break;
@@ -388,7 +389,7 @@ export default class GameLevel extends Scene {
         balloon.addPhysics();
         balloon.addAI(BalloonController, aiOptions);
         balloon.setGroup("balloon");
-        balloon.setTrigger("player", HW5_Events.PLAYER_HIT_BALLOON, null)
+        balloon.setTrigger("player", HW5_Events.PLAYER_HIT_BALLOON, null);
 
     }
 

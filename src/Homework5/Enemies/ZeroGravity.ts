@@ -21,10 +21,38 @@ import BalloonState from "./BalloonState";
  * are fired to get the player position
  */
 export default class ZeroGravity extends BalloonState {
+	doublex: number = 1;
 	onEnter(): void {
+        this.gravity = 0;
+
+		(<AnimatedSprite>this.owner).animation.play("IDLE", true);
+	}
+
+	
+	handleInput(event: GameEvent): void {
+		super.handleInput(event);
+		if (event.type == HW5_Events.PLAYER_MOVE){
+			let position = event.data.get("position");
+			let distance = (new Vec2(position.x, position.y)).distanceTo(this.owner.position);
+			if (distance < 250){
+				this.doublex = 2;
+			}
+			else{
+				this.doublex = 1;
+			}
+		}
+	}
+
+	update(deltaT: number): void {
+		super.update(deltaT);
+
+        this.parent.velocity.x = this.parent.direction.x * this.parent.speed * this.doublex;
+
+		this.owner.move(this.parent.velocity.scaled(deltaT));
 	}
 
 	onExit(): Record<string, any> {
+		(<AnimatedSprite>this.owner).animation.stop();
 		return {};
 	}
 }

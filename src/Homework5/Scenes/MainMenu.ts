@@ -56,8 +56,8 @@ export default class MainMenu extends Scene {
                     collisions:
                     [
                         [0, 1, 1],
-                        [1, 0, 1],//player collides with balloon
-                        [1, 1, 0]//ballon collides with player
+                        [1, 0, 0],
+                        [1, 0, 0]
                     ]
                 }
             }

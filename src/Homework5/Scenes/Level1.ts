@@ -23,7 +23,7 @@ export default class Level1 extends GameLevel {
         // HOMEWORK 5 - TODO
         // You'll want to change this to your level music
         this.load.audio("level_music", "hw5_assets/music/level.mp3");
-        this.load.audio("ballon_pop", "hw5_assets/sounds/boop.wav");
+        this.load.audio("balloon_pop", "hw5_assets/sounds/boop.wav");
     }
 
     // HOMEWORK 5 - TODO
@@ -40,6 +40,17 @@ export default class Level1 extends GameLevel {
      */
     unloadScene(){
         // Keep resources - this is up to you
+        this.resourceManager.keepSpritesheet("player");
+        this.resourceManager.keepSpritesheet("red");
+        this.resourceManager.keepSpritesheet("blue");
+        this.resourceManager.keepAudio("jump");
+        this.resourceManager.keepAudio("switch");
+        this.resourceManager.keepAudio("player_death");
+        this.resourceManager.keepAudio("balloon_pop");
+        this.resourceManager.keepAudio("level_music");
+        this.resourceManager.keepImage("BlueBalloon");
+        this.resourceManager.keepImage("RedBalloon");
+        this.resourceManager.keepImage("Spike");
     }
 
     startScene(): void {
