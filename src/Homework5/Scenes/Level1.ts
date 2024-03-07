@@ -51,6 +51,7 @@ export default class Level1 extends GameLevel {
         this.resourceManager.keepImage("BlueBalloon");
         this.resourceManager.keepImage("RedBalloon");
         this.resourceManager.keepImage("Spike");
+        this.emitter.fireEvent(GameEventType.STOP_SOUND, {key: "level_music"});
     }
 
     startScene(): void {
