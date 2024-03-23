@@ -45,7 +45,7 @@ export default class AStarDemoScene extends Scene {
         navmesh.registerStrategy("astar", new AstarStrategy(navmesh));
         
         // TODO Set the navigation strategy to be A*
-        navmesh.setStrategy("direct");
+        navmesh.setStrategy("astar");
 
         // Create a dummy NPC
         this.npc = this.add.animatedSprite(NPCActor, "BlueEnemy", "primary")
@@ -109,7 +109,27 @@ export default class AStarDemoScene extends Scene {
                     graph.addEdge(i, i + dim.x);
                     // this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(i), end: this.graph.getNodePosition(i + dim.x)})
                 }
-
+                // Create edge bottom right make sure to account for the right edge not having a right
+                rc = walls.getTileColRow(i + dim.x + 1);
+                let right = walls.getTileColRow(i + 1);
+                let left = walls.getTileColRow(i - 1);
+                let bottom = walls.getTileColRow(i + 2 * dim.x);
+                if ((i + 1) % dim.x !== 0 && i + dim.x < graph.numVertices
+                && !walls.isTileCollidable(rc.x, rc.y)
+                 && !walls.isTileCollidable(right.x, right.y)
+                  && !walls.isTileCollidable(bottom.x, bottom.y)) {
+                    graph.addEdge(i, i + dim.x + 1);
+                    // this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(i), end: this.graph.getNodePosition(i + dim.x)})
+                }
+                // Create edge bottom left make sure to account for the left edge not having a left
+                rc = walls.getTileColRow(i + dim.x - 1);
+                if (i % dim.x !== 0 && i + dim.x < graph.numVertices
+                    && !walls.isTileCollidable(rc.x, rc.y)
+                    && !walls.isTileCollidable(left.x, right.y)
+                    && !walls.isTileCollidable(bottom.x, bottom.y)) {
+                    graph.addEdge(i, i + dim.x - 1);
+                    // this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(i), end: this.graph.getNodePosition(i + dim.x)})
+                }
 
             }
         }
