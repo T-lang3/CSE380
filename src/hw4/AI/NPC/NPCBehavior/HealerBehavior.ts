@@ -6,7 +6,7 @@ import Idle from "../NPCActions/GotoAction";
 import { TargetExists } from "../NPCStatuses/TargetExists";
 import BasicFinder from "../../../GameSystems/Searching/BasicFinder";
 import { ClosestPositioned } from "../../../GameSystems/Searching/HW4Reducers";
-import { BattlerActiveFilter, BattlerGroupFilter, BattlerHealthFilter, ItemFilter, RangeFilter, VisibleItemFilter } from "../../../GameSystems/Searching/HW4Filters";
+import { AllyFilter, BattlerActiveFilter, BattlerGroupFilter, BattlerHealthFilter, ItemFilter, RangeFilter, VisibleItemFilter } from "../../../GameSystems/Searching/HW4Filters";
 import PickupItem from "../NPCActions/PickupItem";
 import UseHealthpack from "../NPCActions/UseHealthpack";
 import Healthpack from "../../../GameSystems/ItemSystem/Items/Healthpack";
@@ -42,7 +42,7 @@ export default class HealerBehavior extends NPCBehavior  {
         this.addStatus(HealerStatuses.HAS_HPACK, new HasItem(owner, new BasicFinder<Item>(null, ItemFilter(Healthpack))));
 
         // Check if a lowhealth ally exists in the scene
-        let lowhealthAlly = new BasicFinder<Battler>(null, BattlerActiveFilter(), BattlerGroupFilter([owner.battleGroup]));
+        let lowhealthAlly = new BasicFinder<Battler>(null, BattlerActiveFilter(), BattlerGroupFilter([owner.battleGroup]));//health filter isn't working?
         this.addStatus(HealerStatuses.ALLY_EXISTS, new TargetExists(scene.getBattlers(), lowhealthAlly));
         
         /* ######### Add all healer actions ######## */
@@ -54,6 +54,25 @@ export default class HealerBehavior extends NPCBehavior  {
         idle.addEffect(HealerStatuses.GOAL);
         idle.cost = 100;
         this.addState(HealerActions.IDLE, idle);
+
+        // pickup action
+        let pickupHealthPack = new PickupItem(this, this.owner);
+        pickupHealthPack.targets = scene.getHealthpacks();
+        pickupHealthPack.targetFinder = new BasicFinder<Item>(ClosestPositioned(this.owner), VisibleItemFilter(), ItemFilter(Healthpack));
+        pickupHealthPack.addPrecondition(HealerStatuses.HPACK_EXISTS);
+        pickupHealthPack.addEffect(HealerStatuses.HAS_HPACK);
+        pickupHealthPack.cost = 5;
+        this.addState(HealerActions.PICKUP_HPACK, pickupHealthPack);
+
+        // usehp action
+        let usehp = new UseHealthpack(this, this.owner);
+        usehp.targets = scene.getBattlers();
+        usehp.targetFinder = new BasicFinder<Battler>(null, BattlerActiveFilter(), BattlerGroupFilter([owner.battleGroup]), BattlerHealthFilter(0, owner.maxHealth/3));//health filter isn't working?
+        usehp.addPrecondition(HealerStatuses.ALLY_EXISTS);
+        usehp.addPrecondition(HealerStatuses.HAS_HPACK);
+        usehp.addEffect(HealerStatuses.GOAL);
+        usehp.cost = 1;
+        this.addState(HealerActions.USE_HPACK, usehp);
 
         /* ######### Set the healers goal ######## */
 

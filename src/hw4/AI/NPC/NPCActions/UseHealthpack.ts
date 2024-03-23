@@ -6,6 +6,7 @@ import NPCActor from "../../../Actors/NPCActor";
 import NPCBehavior from "../NPCBehavior";
 import NPCAction from "./NPCAction";
 import Finder from "../../../GameSystems/Searching/Finder";
+import BasicBattler from "../../../GameSystems/BattleSystem/BasicBattler";
 
 
 export default class UseHealthpack extends NPCAction {
@@ -17,12 +18,29 @@ export default class UseHealthpack extends NPCAction {
     // The target we are going to set the actor to target
     protected override _target: Battler | null;
 
+    protected healthpack: Healthpack | null;
+
     public constructor(parent: NPCBehavior, actor: NPCActor) { 
         super(parent, actor);
+        this.healthpack = null;
+        this.target = null;
+    }
+
+    public onEnter(options: Record<string, any>): void {
+        super.onEnter(options);
+        // Find a healthpack in the actors inventory
+        let healthpack = this.actor.inventory.find(item => item.constructor === Healthpack);
+        if (healthpack !== null && healthpack.constructor === Healthpack) {
+            this.healthpack = healthpack;
+        }
     }
 
     public performAction(target: Battler): void {
-
+        if (this.healthpack != null && this.healthpack.inventory !== null && this.healthpack.inventory.id === this.actor.inventory.id){
+            target.health += (<Healthpack>this.healthpack).health;
+            this.actor.inventory.remove(this.healthpack.id);
+        }
+        this.finished();
     }
 
 }

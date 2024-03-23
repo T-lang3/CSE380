@@ -406,7 +406,7 @@ export default class MainHW4Scene extends HW4Scene {
                 !this.walls.isTileCollidable(MathUtils.clamp(rc.x - 1, 0, dim.x - 1), MathUtils.clamp(rc.y - 1, 0, dim.y - 1))
 
             ) {
-                // Create edge to the left
+                // Create edge to the right
                 rc = this.walls.getTileColRow(i + 1);
                 if ((i + 1) % dim.x !== 0 && !this.walls.isTileCollidable(rc.x, rc.y)) {
                     this.graph.addEdge(i, i + 1);
@@ -418,8 +418,27 @@ export default class MainHW4Scene extends HW4Scene {
                     this.graph.addEdge(i, i + dim.x);
                     // this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(i), end: this.graph.getNodePosition(i + dim.x)})
                 }
-
-
+                // Create edge bottom right make sure to account for the right edge not having a right
+                rc = this.walls.getTileColRow(i + dim.x + 1);
+                let right = this.walls.getTileColRow(i + 1);
+                let left = this.walls.getTileColRow(i - 1);
+                let bottom = this.walls.getTileColRow(i + 2 * dim.x);
+                if ((i + 1) % dim.x !== 0 && i + dim.x < this.graph.numVertices
+                 && !this.walls.isTileCollidable(rc.x, rc.y)
+                  && !this.walls.isTileCollidable(right.x, right.y)
+                   && !this.walls.isTileCollidable(bottom.x, bottom.y)) {
+                    this.graph.addEdge(i, i + dim.x + 1);
+                    // this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(i), end: this.graph.getNodePosition(i + dim.x)})
+                }
+                // Create edge bottom left make sure to account for the left edge not having a left
+                rc = this.walls.getTileColRow(i + dim.x - 1);
+                if (i % dim.x !== 0 && i + dim.x < this.graph.numVertices
+                 && !this.walls.isTileCollidable(rc.x, rc.y)
+                 && !this.walls.isTileCollidable(left.x, right.y)
+                 && !this.walls.isTileCollidable(bottom.x, bottom.y)) {
+                    this.graph.addEdge(i, i + dim.x - 1);
+                    // this.add.graphic(GraphicType.LINE, "graph", {start: this.graph.getNodePosition(i), end: this.graph.getNodePosition(i + dim.x)})
+                }
             }
         }
 
