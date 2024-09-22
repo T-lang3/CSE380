@@ -1,0 +1,10 @@
+node_modules
+
+.vscode
+
+dist/*
+
+!dist/builtin
+
+!dist/hw4_assets/
+dist/hw4_assets/jsontolist.py
