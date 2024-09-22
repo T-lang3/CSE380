@@ -1,0 +1,27 @@
+{
+  "hosting": {
+    "site": "terra-tiles",
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+
+      {
+        "source": "benchmark1",
+        "destination": "/benchmark1.html"
+      },
+      {
+        "source": "benchmark2",
+        "destination": "/benchmark2.html"
+      },
+      {
+        "source": "benchmark3",
+        "destination": "/benchmark3.html"
+      }
+      
+    ]
+  }
+}
